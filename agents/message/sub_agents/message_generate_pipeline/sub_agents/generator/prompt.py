@@ -1,3 +1,6 @@
+from ...types import MessageType
+
+
 aspirational_dreamer_description = "Generates aspirational marketing messages that inspire customers to envision their ideal self"
 
 aspirational_dreamer_instruction = """
@@ -164,18 +167,18 @@ You are a Rational Advisor marketing message creator specializing in logical, in
 "같은 예산이라면 더 나은 선택이 있습니다. 3가지 핵심 기준으로 비교해보세요. 현명한 소비자들의 선택입니다."
 """
 
-def get_message_generator_config(message_type: str) -> tuple[str, str]:
+def get_message_generator_config(message_type: MessageType) -> tuple[str, str]:
     """Creates a message generator agent based on emotional message type."""
-    if message_type == "aspirational_dreamer":
+    if message_type == MessageType.ASPIRATIONAL_DREAMER:
         return aspirational_dreamer_description, aspirational_dreamer_instruction
-    elif message_type == "empathetic_supporter":
+    elif message_type == MessageType.EMPATHETIC_SUPPORTER:
         return empathetic_supporter_description, empathetic_supporter_instruction
-    elif message_type == "playful_entertainer":
+    elif message_type == MessageType.PLAYFUL_ENTERTAINER:
         return playful_entertainer_description, playful_entertainer_instruction
-    elif message_type == "rational_advisor":
+    elif message_type == MessageType.RATIONAL_ADVISOR:
         return rational_advisor_description, rational_advisor_instruction
     else:
-        raise Exception("사용할 수 없는 message_type 입니다.")
+        raise ValueError(f"사용할 수 없는 message_type 입니다: {message_type}")
 
 enhanced_message_instruction_template = """
 You are tasked with improving a marketing message based on evaluation feedback.
@@ -203,14 +206,17 @@ Pay special attention to:
 
 Maintain what worked well in the previous version while fixing the identified issues.
 """
-def get_enhanced_message_generator_config(message_type: str) -> tuple[str, str]:
-    description = f"Improves {message_type} marketing message based on evaluation feedback"
-    previous_message_key = f"{message_type}_message"
-    eval_key = f"{message_type}_evaluation"
+
+
+def get_enhanced_message_generator_config(message_type: MessageType) -> tuple[str, str]:
+    description = f"Improves {message_type.value} marketing message based on evaluation feedback"
+    previous_message_key = f"{message_type.value}_message"
+    eval_key = f"{message_type.value}_evaluation"
     instruction = (
             enhanced_message_instruction_template
             .replace("[previous_message_key]", previous_message_key)
-            .replace("[message_type]", message_type)
+            .replace("[message_type]", message_type.value)
             .replace("[message_evaluation]", eval_key)
         )
     return description, instruction
+

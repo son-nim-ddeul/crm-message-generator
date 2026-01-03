@@ -14,7 +14,7 @@
 
 from google.adk.agents import LlmAgent
 from google.adk.apps import App
-from .sub_agents.message_generate_pipeline import message_generate_pipeline
+from .sub_agents.message_generate_pipeline.agent import message_generate_pipeline_agent
 from config import config
 
 from google.adk.agents.callback_context import CallbackContext
@@ -64,7 +64,7 @@ root_agent = LlmAgent(
     model=config.worker_model,
     description="고객의 요청에 따라 마케팅 메시지를 생성한다.",
     instruction="당신은 고객의 마케팅 메시지 생성 요청에 따라 메시지를 작성하는 전문가입니다. 'message_generate_pipeline' sub agents를 통해 마케팅 메시지를 생성하세요.",
-    sub_agents=[message_generate_pipeline],
+    sub_agents=[message_generate_pipeline_agent],
     before_agent_callback=set_state
 )
 
