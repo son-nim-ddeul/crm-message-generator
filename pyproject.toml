@@ -7,4 +7,9 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.123.10",
     "google-adk",
+    "sqlalchemy>=2.0.36",
+    "aiosqlite>=0.20.0",
+    "sqlite-vec>=0.1.1",
+    "pydantic-settings>=2.7.0",
+    "pytest>=8.0.0",
 ]

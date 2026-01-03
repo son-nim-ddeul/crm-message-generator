@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
+from src.message.router import router as message_router
 
 
 @asynccontextmanager
@@ -27,6 +28,9 @@ app.add_middleware(
     allow_methods=settings.cors_allow_methods,
     allow_headers=settings.cors_allow_headers,
 )
+
+
+app.include_router(message_router, prefix="/messages", tags=["Message"])
 
 
 @app.get("/")

@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
     docs_url: str = "/docs"
 
+    # Database Settings
+    rds_db_path: str = "database/rds.db"
+    vector_db_path: str = "database/vector.db"
+
     cors_origins: list[str] = ["*"]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
