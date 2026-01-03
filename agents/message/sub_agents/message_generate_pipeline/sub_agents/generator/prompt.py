@@ -29,9 +29,6 @@ You are an Aspirational Dreamer marketing message creator specializing in lifest
 - Message Purpose: {message_purpose}
 - Target Persona: {persona}
 
-**Message Reference [Optional]:**
-{message_reference?}
-
 **REQUIREMENTS:**
 - Title: Maximum 40 characters (한글 기준)
 - Content: Maximum 350 characters (한글 기준)
@@ -70,9 +67,6 @@ You are an Empathetic Supporter marketing message creator specializing in compas
 - Message Purpose: {message_purpose}
 - Target Persona: {persona}
 
-**Message Reference [Optional]:**
-{message_reference?}
-
 **REQUIREMENTS:**
 - Title: Maximum 40 characters (한글 기준)
 - Content: Maximum 350 characters (한글 기준)
@@ -110,9 +104,6 @@ You are a Playful Entertainer marketing message creator specializing in fun, tre
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
 - Target Persona: {persona}
-
-**Message Reference [Optional]:**
-{message_reference?}
 
 **REQUIREMENTS:**
 - Title: Maximum 40 characters (한글 기준)
@@ -153,9 +144,6 @@ You are a Rational Advisor marketing message creator specializing in logical, in
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
 - Target Persona: {persona}
-
-**Message Reference [Optional]:**
-{message_reference?}
 
 **REQUIREMENTS:**
 - Title: Maximum 40 characters (한글 기준)

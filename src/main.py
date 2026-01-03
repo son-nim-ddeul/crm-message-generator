@@ -4,12 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
 from src.message.router import router as message_router
-
+from src.runner.runner import initialize_adk_services
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """애플리케이션 생명주기 관리"""
     # (필요시) 시작 시 실행할 코드
+    initialize_adk_services()
     yield
     # (필요시) 종료 시 실행할 코드
 

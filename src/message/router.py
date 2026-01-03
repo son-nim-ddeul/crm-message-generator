@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from . import service, schemas, exceptions
 from .dependencies import get_db
+from agents.message.agent import get_app_name
+from src.runner.runner import setup_session_and_runner, execute_agent
 
 router = APIRouter()
 
@@ -30,3 +33,35 @@ async def get_reference(reference_id: int, db: Session = Depends(get_db)):
         raise exceptions.MessageReferenceNotFound()
     return db_ref
 
+
+@router.post(
+    "/run_sse",
+    response_model=schemas.EventResponse,
+    status_code=status.HTTP_200_OK,
+    summary="메시지 생성 워크플로우 진행",
+    description="SSE 기반 에이전트의 응답을 스트리밍합니다."
+)
+async def run_agent_sse(req: schemas.MessageAgentRequest) -> StreamingResponse:
+    app_name = get_app_name()
+    try:
+        session_id, runner = await setup_session_and_runner(
+            app_name=app_name,
+            user_id=req.user_id,
+            session_id=req.session_id,
+            state_config=req.config.model_dump()
+        )
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+    return StreamingResponse(
+        execute_agent(
+            user_id=req.user_id,
+            session_id=session_id,
+            runner=runner
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )

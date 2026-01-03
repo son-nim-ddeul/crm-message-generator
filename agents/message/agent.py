@@ -1,8 +1,8 @@
-# TODO 1. 주요 메시지 성과, 예상 발송일 기반 RAG 조회
-# TODO 2. 메시지 생성 Parrell agent
+# TODO 1. 메시지 생성 Parrell agent
 #  - 전략별 Loop agent
 #    - 메시지 생성
 #    - 생성 메시지 평가
+# TODO 2. 생성된 메시지 및 주요 메시지 성과, 예상 발송일 기반 RAG 조회 -> 예측결과 반환
 
 # root_agent
 # - sequential agent => 순서대로 agent 동작
@@ -15,7 +15,7 @@
 from google.adk.agents import LlmAgent
 from google.adk.apps import App
 from .sub_agents.message_generate_pipeline.agent import message_generate_pipeline_agent
-from config import config
+from agents.config import config
 
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types
@@ -51,10 +51,11 @@ def set_state(callback_context: CallbackContext) -> Optional[types.Content]:
 제품에 대한 객관적인 정보를 중시하므로 과학적인 근거를 제시하되 데이터스모그 현상이 나타나지 않도록 단순 명료하면서 투명하고 정직하게 접근하는 시도가 필요합니다.
 """
 
-    # message_reference [optional]
     callback_context.state["brand_tone"] = brand_tone
     callback_context.state["message_purpose"] = message_purpose
+    # persona 찾기 전, ui_status : 페르소나 세팅
     callback_context.state["persona"] = persona
+    # persona 찾기 전, ui_status : 페르소나 세팅 완료
     return None
    
 # TODO 1. Sequential Agent 로 수정
@@ -69,3 +70,6 @@ root_agent = LlmAgent(
 )
 
 app = App(root_agent=root_agent, name="message")
+
+def get_app_name() -> str:
+    return "message"

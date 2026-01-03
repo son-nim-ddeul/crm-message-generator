@@ -15,7 +15,16 @@ class EscalationChecker(BaseAgent):
         evaluation_result = ctx.session.state.get(f"{self.message_type.value}_evaluation")
         if evaluation_result and evaluation_result.get("grade") == "pass":
             logging.info(f"[{self.name}] Message evaluation passed. Escalating to stop loop.")
-            yield Event(author=self.name, actions=EventActions(escalate=True))
+            yield Event(
+                invocation_id=ctx.invocation_id,
+                branch=ctx.branch,
+                author=self.name, 
+                actions=EventActions(escalate=True)
+            )
         else:
             logging.info(f"[{self.name}] Message evaluation failed or not found. Loop will continue.")
-            yield Event(author=self.name)
+            yield Event(
+                invocation_id=ctx.invocation_id,
+                branch=ctx.branch,
+                author=self.name
+            )
