@@ -18,14 +18,16 @@ class ResearchConfiguration:
     """Configuration for research-related models and parameters.
 
     Attributes:
+        writer_model (str): Model for writing tasks.
         critic_model (str): Model for evaluation tasks.
         worker_model (str): Model for working/generation tasks.
         max_search_iterations (int): Maximum search iterations allowed.
     """
 
-    write_model: str = "gemini-3-pro-preview"
-    critic_model: str = "gemini-3-pro-preview"
-    worker_model: str = "gemini-3-pro-preview"
+    # gemini-3-pro-preview
+    writer_model: str = "gemini-2.5-flash"
+    critic_model: str = "gemini-2.5-flash"
+    worker_model: str = "gemini-2.5-flash"
     max_search_iterations: int = 3
 
 

@@ -181,7 +181,7 @@ enhanced_message_instruction_template = """
 You are tasked with improving a marketing message based on evaluation feedback.
 
 **CONTEXT:**
-- Emotional Tone Type: {tone_type}
+- Emotional Tone Type: [message_type]
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
 - Target Persona: {persona}
@@ -207,4 +207,5 @@ def get_enhanced_message_generator_config(message_type: str) -> tuple[str, str]:
     description = f"Improves {message_type} marketing message based on evaluation feedback"
     previous_message_key = f"{message_type}_message"
     instruction = enhanced_message_instruction_template.replace("[previous_message_key]", previous_message_key)
+    instruction = instruction.replace("[message_type]", message_type)
     return description, instruction

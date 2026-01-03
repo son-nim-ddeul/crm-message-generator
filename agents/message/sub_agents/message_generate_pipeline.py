@@ -4,12 +4,12 @@ from typing import Literal, Optional, List
 from collections.abc import AsyncGenerator
 
 from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, ParallelAgent, SequentialAgent
-from agents.config import config
+from config import config
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
 from pydantic import BaseModel, Field
 
-from agents.message.sub_agents.strategic_message_prompt import (
+from .strategic_message_prompt import (
     get_message_generator_config,
     get_enhanced_message_generator_config
 )
@@ -49,7 +49,7 @@ def get_message_generator(message_type:str) -> LlmAgent:
     description, instruction = get_message_generator_config(message_type=message_type)
     return LlmAgent(
         name="message_generator",
-        model=config.write_model,
+        model=config.writer_model,
         description=description,
         instruction=instruction,
         output_schema=MessageOutput,
