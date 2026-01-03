@@ -1,6 +1,5 @@
-# TODO 1. 메시지 발송 목적 기반 페르소나 선정
-# TODO 2. 주요 메시지 성과, 예상 발송일 기반 RAG 조회
-# TODO 3. 메시지 생성 Parrell agent
+# TODO 1. 주요 메시지 성과, 예상 발송일 기반 RAG 조회
+# TODO 2. 메시지 생성 Parrell agent
 #  - 전략별 Loop agent
 #    - 메시지 생성
 #    - 생성 메시지 평가
@@ -26,6 +25,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # TODO 1. user state 체크 후 없다면 적용 로직 추가
+# TODO 2. request로 전달 받은 persona_id 기반 sqlLite에서 persona 조회 및 state 저장 로직 추가
 def set_state(callback_context: CallbackContext) -> Optional[types.Content]:
     # brand_tone
     brand_tone = "친구 같은 친근한 말투, 유행어 활용, 밝고 경쾌한 대화체"
@@ -57,8 +57,7 @@ def set_state(callback_context: CallbackContext) -> Optional[types.Content]:
     callback_context.state["persona"] = persona
     return None
    
-# TODO : Sequential Agent 로 수정
-# TODO 1. 메시지 발송 목적 기반 페르소나 선정 에이전트 추가
+# TODO 1. Sequential Agent 로 수정
 # TODO 2. 주요 메시지 성과, 예상 발송일 기반 RAG 조회 에이전트 추가
 root_agent = LlmAgent(
     name="message_generator",
