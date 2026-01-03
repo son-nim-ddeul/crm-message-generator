@@ -16,12 +16,9 @@ class MessageOutput(BaseModel):
     content: str = Field(description="Message content, maximum 350 characters in Korean")
     tone_rationale: str = Field(description="Brief explanation of how this message implements the specific emotional tone strategy")
 
-class EnhancedMessageOutput(BaseModel):
+class EnhancedMessageOutput(MessageOutput):
     """Model for providing evaluation feedback on marketing message quality."""
 
-    title: str = Field(description="Message title, maximum 40 characters in Korean")
-    content: str = Field(description="Message content, maximum 350 characters in Korean")
-    tone_rationale: str = Field(description="Brief explanation of how this message implements the specific emotional tone strategy")
     revision_notes: str = Field(
         default=None,
         description="[Optional] 어떤 부분을 어떻게 개선했는지 간단히 설명"

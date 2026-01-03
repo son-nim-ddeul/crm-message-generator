@@ -89,4 +89,3 @@ def test_vector_operations(vector_session):
         .fetchone()
     )
     assert res_after_delete is None
-
