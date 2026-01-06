@@ -36,10 +36,16 @@ async def get_reference(reference_id: int, db: Session = Depends(get_db)):
 
 @router.post(
     "/run_sse",
-    response_model=schemas.EventResponse,
+    response_class=StreamingResponse,
     status_code=status.HTTP_200_OK,
     summary="메시지 생성 워크플로우 진행",
-    description="SSE 기반 에이전트의 응답을 스트리밍합니다."
+    description="SSE 기반 에이전트의 응답을 스트리밍합니다.",
+    responses={
+        200: {
+            "content": {"text/event-stream": {}},
+            "description": "SSE 스트림 응답",
+        }
+    }
 )
 async def run_agent_sse(req: schemas.MessageAgentRequest) -> StreamingResponse:
     app_name = get_app_name()
@@ -100,10 +106,7 @@ async def get_sse_report(req: schemas.MessageAgentRequest) -> Response:
             
         last_event_str = events[-1]
         
-        # SSE 포맷 (data: {json}\n\n)에서 JSON 추출
-        import json
-        json_str = last_event_str.replace("data: ", "").strip()
-        last_event_data = json.loads(json_str)
+        last_event_data = schemas.EventResponse.model_validate_json(last_event_str)
         
         if last_event_data.get("event_status") != schemas.EventStatus.COMPLETE:
             raise HTTPException(status_code=400, detail="Agent is not complete")

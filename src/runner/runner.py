@@ -85,11 +85,6 @@ async def setup_session_and_runner(
     return session.id, runner
 
 
-def json_dumps(response: schemas.EventResponse) -> str:
-    json_str = response.model_dump_json(ensure_ascii=False)
-    return f"data: {json_str}\n\n"
-
-
 async def execute_agent(
     user_id: str, 
     session_id: str, 
@@ -105,7 +100,7 @@ async def execute_agent(
             session_id=session_id,
             timestamp=datetime.now().timestamp()
         )
-        yield json_dumps(start_response)
+        yield start_response.model_dump_json(ensure_ascii=False)
         
         async with Aclosing(
             runner.run_async(
@@ -143,7 +138,7 @@ async def execute_agent(
                 from pprint import pprint
                 pprint(response)
                 
-                yield json_dumps(response)
+                yield response.model_dump_json(ensure_ascii=False)
                 
             # Stream 종료 yield
             complete_response = schemas.FinalEventResponse(
@@ -153,7 +148,7 @@ async def execute_agent(
                 final_report_response=get_global_memory_cache(key=session_id),
                 timestamp=datetime.now().timestamp()
             )
-            yield json_dumps(complete_response)
+            yield complete_response.model_dump_json(ensure_ascii=False)
     except Exception as e:
         logger.exception("Error in execute_agent: %s", e)
         response = schemas.EventResponse(
@@ -173,4 +168,4 @@ async def execute_agent(
             error_message=error_message
         )
         
-        yield json_dumps(response)
+        yield response.model_dump_json(ensure_ascii=False)
