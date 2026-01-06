@@ -1,17 +1,20 @@
+from datetime import timedelta
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
+
 from ..types import MessageType
 from agents.config import config
+from .utils import find_previous_messages, get_betweem_holiday_list, get_season
 from .prompt import get_performance_estimation_config
 from google.adk.agents.callback_context import CallbackContext
-from google.genai import types
-from typing import Optional
+
 
 class PerformanceMetrics(BaseModel):
     cpc: float = Field(description="예상 클릭당 비용(Cost Per Click)")
     roas: float = Field(description="예상 광고 수익률(Return On Ad Spend)")
     cpm: float = Field(description="예상 1,000회 노출당 비용(Cost Per Mille)")
     ctr: float = Field(description="예상 클릭률(Click Through Rate)")
+
 
 class EstimationOutput(BaseModel):
     """Output schema for messages estimation."""
@@ -40,27 +43,34 @@ class EstimationOutput(BaseModel):
     )
     
 
-def before_agent_callback(callback_context: CallbackContext) -> Optional[types.Content]:
-    # {message_type}_previous_message <- RAG 기반
-    # TOP-K -> 3건
-    
-    # distance : 유사도
-    # content : 메시지 내용
-    # metadata
-    #  - CPC, ROAS, CPM, CTR => KPI {CPC, ROAS, CPM, CTR}
-    #  - 발송 일자 -> #  => 발송 일자 날짜, 근접 공휴일 (전후 2주 holiday name list), 계절(봄, 여름, 가을, 겨울) 데이터 조회 Tool 추가
-    #  => DataContext {...}
-    
-    
-    # TODO: message_sending_datetime state에서 잡아서 구체화 및 없다면 미정이라고 적어야함
-    # callback_context.state.get("")
-    # callback_context.state[""]
-    pass
+def set_previous_messages(callback_context: CallbackContext):
+    TOP_K = 3
 
-def create_estimate_pipeline(
-    message_type: MessageType, 
-    description: str
-) -> LlmAgent:
+    agent_name = callback_context.agent_name
+    message_type = MessageType.get_message_type(agent_name=agent_name)
+
+    def _get_previous_messages() -> list[dict] | None:
+        if not callback_context.state.get("message_sending_datetime"):
+            return None
+
+        current_message_info = {
+            "content": callback_context.state.get("message_content"),
+            "metadata": {
+                "KPI": callback_context.state.get("message_metadata", {}).get("KPI", ""),
+                "send_reserve_date": callback_context.state.get("message_metadata", {}).get("send_reserve_date", None),
+                "holiday_list": get_betweem_holiday_list(
+                    start_date=callback_context.state.get("message_sending_datetime"),
+                    end_date=callback_context.state.get("message_sending_datetime") + timedelta(days=14)),
+                "season": get_season(callback_context.state.get("message_sending_datetime")),
+            },
+        }
+        return find_previous_messages(message_info=current_message_info, top_k=TOP_K)
+    
+
+    callback_context.state[f"{message_type.value}_previous_messages"] = _get_previous_messages()
+
+
+def create_estimate_pipeline(message_type: MessageType, description: str) -> LlmAgent:
     return LlmAgent(
         name=f"{message_type.value}_estimation_agent",
         model=config.writer_model,
@@ -68,8 +78,9 @@ def create_estimate_pipeline(
         instruction=get_performance_estimation_config(message_type=message_type),
         output_schema=EstimationOutput,
         output_key=f"{message_type.value}_estimation",
-        before_agent_callback=before_agent_callback
+        before_agent_callback=set_previous_messages
     )
+
 
 aspirational_dreamer_estimation = create_estimate_pipeline(
     message_type=MessageType.ASPIRATIONAL_DREAMER,

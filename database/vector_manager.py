@@ -53,29 +53,37 @@ class VectorManager:
             )
         return item_id
 
-    def search_similar(self, query: str, limit: int = 5):
-        """유사도 기반 검색"""
-        query_embedding = self.embedding_manager.embed_text(query)
+    def search_similar(self, content: str, key: str = None, limit: int = 5):
+        """유사도 기반 검색 (컬럼 기반 매칭)"""
+        query_embedding = self.embedding_manager.embed_text(content)
+        
+        # 쿼리 동적 생성
+        sql = """
+            SELECT 
+                m.key,
+                m.content,
+                m.metadata,
+                v.distance
+            FROM vec_items v
+            JOIN item_metadata m ON v.rowid = m.id
+            WHERE v.embedding MATCH vec_f32(:query_vec)
+        """
+        params = {
+            "query_vec": json.dumps(query_embedding),
+            "limit": limit
+        }
+        
+        if key:
+            sql += " AND m.key = :key"
+            params["key"] = key
+            
+        sql += """
+            AND k = :limit
+            ORDER BY v.distance ASC
+        """
         
         with self.engine.connect() as conn:
-            results = conn.execute(
-                text("""
-                    SELECT 
-                        m.key,
-                        m.content,
-                        m.metadata,
-                        v.distance
-                    FROM vec_items v
-                    JOIN item_metadata m ON v.rowid = m.id
-                    WHERE v.embedding MATCH vec_f32(:query_vec)
-                    AND k = :limit
-                    ORDER BY v.distance ASC
-                """),
-                {
-                    "query_vec": json.dumps(query_embedding),
-                    "limit": limit
-                }
-            ).fetchall()
+            results = conn.execute(text(sql), params).fetchall()
             
         return [
             {
@@ -86,4 +94,3 @@ class VectorManager:
             }
             for r in results
         ]
-

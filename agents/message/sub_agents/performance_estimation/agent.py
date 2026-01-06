@@ -23,4 +23,4 @@ performance_estimation_agent = ParallelAgent(
         playful_entertainer_estimation,
         rational_advisor_estimation
     ]
-) 
+)

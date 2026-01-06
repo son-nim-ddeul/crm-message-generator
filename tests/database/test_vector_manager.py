@@ -84,7 +84,7 @@ def test_vector_search_by_title_and_content(vector_manager_fixture):
     print(f"\n[테스트 정보] 실제 API 사용 여부: {USE_REAL_API}")
     print(f"[검색 쿼리] {search_query}")
     
-    results = vm.search_similar(search_query, limit=2)
+    results = vm.search_similar(content=search_query, limit=2)
     
     # 5. 검증
     assert len(results) == 2
@@ -96,19 +96,19 @@ def test_vector_search_by_title_and_content(vector_manager_fixture):
     
     if not USE_REAL_API:
         # 모킹 모드일 때만 특정 순서와 벡터 값 기반 검증 수행
-        # [0.48]과 [0.5]의 거리가 가장 가까움
         assert results[0]["key"] == "신규 회원 가입 감사 쿠폰"
         assert results[0]["metadata"]["category"] == "COUPON"
         assert "웰컴 쿠폰" in results[0]["content"]
         
         # 두 번째로 가까운 데이터(첫 번째 데이터) 확인
-        # [0.48]과 [0.1]의 거리가 [0.48]과 [0.9]의 거리보다 가까움
         assert results[1]["key"] == "여름 시즌 세일 안내"
         
         # 조회된 결과 리스트의 정렬 상태 확인 (distance 오름차순)
+        assert "distance" in results[0]
         assert results[0]["distance"] < results[1]["distance"]
     else:
         # 실제 API 호출 시에는 결과가 존재하고 distance가 정렬되어 있는지만 확인
+        assert len(results) > 0
         assert results[0]["distance"] <= results[1]["distance"]
 
 
@@ -119,6 +119,6 @@ def test_vector_search_no_results(vector_manager_fixture):
     if not USE_REAL_API:
         mock_emb.embed_text.return_value = [0.0] * 768
     
-    results = vm.search_similar("아무거나", limit=5)
+    results = vm.search_similar(content="아무거나", limit=5)
     assert isinstance(results, list)
     assert len(results) == 0

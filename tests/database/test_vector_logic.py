@@ -42,7 +42,7 @@ def test_vector_manager_insert_and_search(mock_vector_manager):
     mock_emb.embed_text.side_effect = None
     mock_emb.embed_text.return_value = [0.12] * 768
     
-    results = vm.search_similar("갤럭시와 비슷한 것은?", limit=2)
+    results = vm.search_similar(content="갤럭시와 비슷한 것은?", limit=2)
     
     # 검증: 가장 가까운 순서대로 리스트 조회되는지 확인
     assert len(results) == 2
@@ -61,7 +61,7 @@ def test_vector_manager_list_results(mock_vector_manager):
     
     # 조회
     mock_emb.embed_text.return_value = [0.1] * 768
-    results = vm.search_similar("테스트", limit=10)
+    results = vm.search_similar(content="테스트", limit=10)
     
     assert isinstance(results, list)
     assert len(results) > 0
