@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
 from agents.config import config
-from ...types import MessageType
+from ....types import MessageType
 
 from .prompt import (
     get_message_generator_config,

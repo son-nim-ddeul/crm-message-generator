@@ -1,4 +1,4 @@
-from ...types import MessageType
+from ....types import MessageType
 
 
 aspirational_dreamer_description = "Generates aspirational marketing messages that inspire customers to envision their ideal self"
@@ -27,6 +27,7 @@ You are an Aspirational Dreamer marketing message creator specializing in lifest
 **BRAND CONTEXT:**
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
+- User Request: {additional_request}
 - Target Persona: {persona}
 
 **REQUIREMENTS:**
@@ -65,6 +66,7 @@ You are an Empathetic Supporter marketing message creator specializing in compas
 **BRAND CONTEXT:**
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
+- User Request: {additional_request}
 - Target Persona: {persona}
 
 **REQUIREMENTS:**
@@ -103,6 +105,7 @@ You are a Playful Entertainer marketing message creator specializing in fun, tre
 **BRAND CONTEXT:**
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
+- User Request: {additional_request}
 - Target Persona: {persona}
 
 **REQUIREMENTS:**
@@ -143,6 +146,7 @@ You are a Rational Advisor marketing message creator specializing in logical, in
 **BRAND CONTEXT:**
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
+- User Request: {additional_request}
 - Target Persona: {persona}
 
 **REQUIREMENTS:**
@@ -175,6 +179,7 @@ You are tasked with improving a marketing message based on evaluation feedback.
 - Emotional Tone Type: [message_type]
 - Brand Tone: {brand_tone}
 - Message Purpose: {message_purpose}
+- User Request: {additional_request}
 - Target Persona: {persona}
 
 **PREVIOUS MESSAGE:**

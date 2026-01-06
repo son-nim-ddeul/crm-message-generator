@@ -1,7 +1,7 @@
 from google.adk.agents import LoopAgent, SequentialAgent
 from agents.config import config
 
-from .types import MessageType
+from ..types import MessageType
 
 from .sub_agents.generator.agent import get_message_generator, get_enhanced_message_generator
 from .sub_agents.evaluator.agent import get_message_evaluator

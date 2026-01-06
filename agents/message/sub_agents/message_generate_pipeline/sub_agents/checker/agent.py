@@ -4,7 +4,7 @@ from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
 
-from ...types import MessageType
+from ....types import MessageType
 
 class EscalationChecker(BaseAgent):
     """Checks research evaluation and escalates to stop the loop if grade is 'pass'."""
