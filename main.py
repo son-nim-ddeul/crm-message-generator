@@ -3,7 +3,7 @@ FastAPI 서버 실행 파일
 """
 import uvicorn
 
-from app.config import settings
+from src.config import settings
 
 
 def main():
