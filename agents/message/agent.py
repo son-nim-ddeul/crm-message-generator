@@ -1,9 +1,10 @@
+from datetime import datetime
 from google.adk.agents import SequentialAgent
 from google.adk.apps import App
 from .sub_agents.message_generate_pipeline.agent import message_generate_pipeline_agent
 from .sub_agents.performance_estimation.agent import performance_estimation_agent
 from .sub_agents.report.agent import report_agent
-from agents.config import config
+from config import config
 
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types
@@ -16,6 +17,16 @@ load_dotenv()
 
 
 def set_state(callback_context: CallbackContext) -> Optional[types.Content]:
+    # 임시 데이터
+    callback_context.state["persona_id"] = "a7f3e9d2-4b8c-4a1f-9e2d-7c5b8a3f1e6d"
+    callback_context.state["brand_tone"] = "효과적인 제품 소개"
+    callback_context.state["message_purpose"] = "홍보"
+    callback_context.state["key_marketing_achievements"] = "판매량 증가"
+    callback_context.state["message_sending_datetime"] = datetime(2026, 1, 1, 20, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    callback_context.state["product_info"] = "이니스프리 미스트: 20ml, 피부 진정 효과"
+    callback_context.state["current_event_info"] = "2026년 1월 1일 신제품 출시"
+    callback_context.state["additional_request"] = "None"
+
     persona_id = callback_context.state.get("persona_id")
     if persona_id is None:
         callback_context.state["persona"] = "target persona is None"

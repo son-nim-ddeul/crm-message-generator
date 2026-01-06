@@ -1,5 +1,6 @@
 from google.adk.agents import LoopAgent, SequentialAgent
-from agents.config import config
+
+from config import config
 
 from ..types import MessageType
 

@@ -1,11 +1,13 @@
-from datetime import timedelta
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
 
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent.parent.parent.parent.parent))
 from src.message.schemas import MessageAgentConfig
 
 from ..types import MessageType
-from agents.config import config
+from config import config
 from .utils import find_previous_messages
 from .prompt import get_performance_estimation_config
 from google.adk.agents.callback_context import CallbackContext
@@ -50,7 +52,7 @@ def set_previous_messages(callback_context: CallbackContext):
 
     agent_name = callback_context.agent_name
     message_type = MessageType.get_message_type(agent_name=agent_name)
-    message_config = MessageAgentConfig(**callback_context.state)
+    message_config = MessageAgentConfig(**callback_context.state.to_dict())
     message_content = callback_context.state.get(f"{message_type.value}_message")
 
     previous_messages = find_previous_messages(
@@ -74,7 +76,6 @@ def create_estimate_pipeline(message_type: MessageType, description: str) -> Llm
         output_key=f"{message_type.value}_estimation",
         before_agent_callback=set_previous_messages
     )
-
 
 
 aspirational_dreamer_estimation = create_estimate_pipeline(
