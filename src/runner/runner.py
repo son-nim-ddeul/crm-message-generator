@@ -9,20 +9,16 @@ from google.adk.runners import Runner
 from google.adk.apps import App
 from google.genai.types import Content, Part
 from google.adk.sessions.sqlite_session_service import SqliteSessionService
+from agents.global_memory_cache import get_global_memory_cache
 from src.config import settings
 from agents.message.agent import app as message_app
 from src.message import schemas
+from src.message.schemas import EventStatus
 
 logger = logging.getLogger(__name__)
 
 _runners: dict[str, Runner] = {}
 _session_service: SqliteSessionService | None = None
-
-class EventStatus(StrEnum):
-    START = "start"
-    PROGRESS = "progress"
-    COMPLETE = "complete"
-    ERROR = "error"
 
 def __get_app(app_name: str) -> App:
     if app_name == message_app.name:
@@ -92,25 +88,7 @@ async def setup_session_and_runner(
 def json_dumps(response: schemas.EventResponse) -> str:
     json_str = response.model_dump_json(ensure_ascii=False)
     return f"data: {json_str}\n\n"
-    
-# {
-#  result = [
-#     {
-#             message_type: "aspirational_dreamer",
-#             title: {message_type.value}_message.title,
-#             content: {message_type.value}_message.content,
-#             estimation: 마크다운으로 정리, 포맷팅,
-#             conclusion: 마크다운으로 정리, 포맷팅
-#         }
-#  ]
-# }
-def __formatting_final_report_response(
-    session_id: str
-) -> dict:
-    # global에는 session_id : key 가져와서
-    
-    # 마지막으로 global cache 해당 key clear
-    return None
+
 
 async def execute_agent(
     user_id: str, 
@@ -161,14 +139,18 @@ async def execute_agent(
                         parts=event.content.parts
                     )
                 
+                # TODO: 심플로깅 추후 삭제
+                from pprint import pprint
+                pprint(response)
+                
                 yield json_dumps(response)
                 
             # Stream 종료 yield
-            complete_response = schemas.EventResponse(
+            complete_response = schemas.FinalEventResponse(
                 event_status=EventStatus.COMPLETE,
                 user_id=user_id,
                 session_id=session_id,
-                final_report_response=__formatting_final_report_response(),
+                final_report_response=get_global_memory_cache(key=session_id),
                 timestamp=datetime.now().timestamp()
             )
             yield json_dumps(complete_response)

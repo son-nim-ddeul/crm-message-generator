@@ -58,30 +58,52 @@ class VectorManager:
         query_embedding = self.embedding_manager.embed_text(content)
         
         # 쿼리 동적 생성
-        sql = """
-            SELECT 
-                m.key,
-                m.content,
-                m.metadata,
-                v.distance
-            FROM vec_items v
-            JOIN item_metadata m ON v.rowid = m.id
-            WHERE v.embedding MATCH vec_f32(:query_vec)
-        """
+        # KNN 최적화를 위해 subquery에서 먼저 검색하거나, 
+        # sqlite-vec v0.1.x에서는 JOIN 시 LIMIT이 하위 쿼리로 전파되지 않을 수 있음
+        if key:
+            sql = """
+                SELECT 
+                    m.key,
+                    m.content,
+                    m.metadata,
+                    v.distance
+                FROM (
+                    SELECT rowid, distance 
+                    FROM vec_items 
+                    WHERE embedding MATCH vec_f32(:query_vec)
+                    ORDER BY distance 
+                    LIMIT :limit
+                ) v
+                JOIN item_metadata m ON v.rowid = m.id
+                WHERE m.key = :key
+                ORDER BY v.distance ASC
+            """
+        else:
+            sql = """
+                SELECT 
+                    m.key,
+                    m.content,
+                    m.metadata,
+                    v.distance
+                FROM (
+                    SELECT rowid, distance 
+                    FROM vec_items 
+                    WHERE embedding MATCH vec_f32(:query_vec)
+                    ORDER BY distance 
+                    LIMIT :limit
+                ) v
+                JOIN item_metadata m ON v.rowid = m.id
+                ORDER BY v.distance ASC
+            """
+            
         params = {
             "query_vec": json.dumps(query_embedding),
             "limit": limit
         }
         
         if key:
-            sql += " AND m.key = :key"
             params["key"] = key
             
-        sql += """
-            AND k = :limit
-            ORDER BY v.distance ASC
-        """
-        
         with self.engine.connect() as conn:
             results = conn.execute(text(sql), params).fetchall()
             

@@ -89,14 +89,14 @@ _ui_status_cache = {
     }
 }
 
-def __format_strategy_prefix(branch: str) -> Optional[str]:
+def _format_strategy_prefix(branch: str) -> Optional[str]:
     for message_type in MessageType:
         if message_type.value in branch:
             strategy_name = message_type.value.replace('_', ' ').title()
             return f"(Strategy: {strategy_name})"
     return None
 
-def __get_ui_status(
+def _get_ui_status(
     agent_name: str,
     execution_point: str,
     branch: Optional[str]
@@ -111,14 +111,14 @@ def __get_ui_status(
     if not branch:
         return None
     
-    prefix = __format_strategy_prefix(branch=branch)
+    prefix = _format_strategy_prefix(branch=branch)
     if not prefix:
         return None
     
     ui_status = ui_status.get(execution_point)
     return f"{prefix} {ui_status}"
 
-class StautsLoggingPlugin(BasePlugin):
+class StatusLoggingPlugin(BasePlugin):
         
   def __init__(self, name: str = "status_logging_plugin"):
     super().__init__(name)
@@ -126,7 +126,7 @@ class StautsLoggingPlugin(BasePlugin):
   async def before_agent_callback(
       self, *, agent: BaseAgent, callback_context: CallbackContext
   ) -> Optional[types.Content]:
-      ui_status = __get_ui_status(
+      ui_status = _get_ui_status(
           agent_name=agent.name,
           execution_point="before",
           branch=callback_context._invocation_context.branch
@@ -139,7 +139,7 @@ class StautsLoggingPlugin(BasePlugin):
   async def after_agent_callback(
       self, *, agent: BaseAgent, callback_context: CallbackContext
   ) -> Optional[types.Content]:
-    ui_status = __get_ui_status(
+    ui_status = _get_ui_status(
         agent_name=agent.name,
         execution_point="after",
         branch=callback_context._invocation_context.branch

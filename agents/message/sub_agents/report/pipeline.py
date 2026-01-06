@@ -1,7 +1,9 @@
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
+
+from agents.global_memory_cache import set_global_memory_cache
 from ..types import MessageType
-from config import config
+from agents.config import config
 from .prompt import get_report_config
 from google.adk.agents.callback_context import CallbackContext
 
@@ -18,23 +20,34 @@ class ReportOutput(BaseModel):
     )
     
 
-def after_agent_callback(callback_context: CallbackContext):
-    state = callback_context.state
-    # global dict에 임시 캐싱
-    session_id = callback_context.session.id
-    # session_id를 key값으로
-    # message_type, title, content, estimation, conclusion 캐싱
-    return None
+def save_result_to_global_memory_cache(callback_context: CallbackContext):
+    agent_name = callback_context.agent_name
+    message_type = MessageType.get_message_type(agent_name=agent_name)
+    
+    generated_message = callback_context.state.get(f"{message_type.value}_message")
+    report = callback_context.state.get(f"{message_type.value}_report")
+
+    set_global_memory_cache(
+        key=f"{callback_context.session.id}", 
+        value = {
+            message_type.value: {
+                "title": generated_message.get("title"),
+                "content": generated_message.get("content"),
+                "estimation": report.get("estimation"),
+                "conclusion": report.get("conclusion"),
+            }
+        }
+    )
 
 def create_report_pipeline(message_type: MessageType, description: str) -> LlmAgent:
     return LlmAgent(
-        name="report_agent",
+        name=f"{message_type.value}_report_agent",
         model=config.writer_model,
         description=description,
         instruction=get_report_config(message_type=message_type),
         output_schema=ReportOutput,
         output_key=f"{message_type.value}_report",
-        after_agent_callback=after_agent_callback
+        after_agent_callback=save_result_to_global_memory_cache
     )
     
 aspirational_dreamer_report = create_report_pipeline(

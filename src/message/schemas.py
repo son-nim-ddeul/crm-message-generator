@@ -1,6 +1,14 @@
 from holidayskr import year_holidays
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime, timedelta
+from enum import StrEnum
+
+
+class EventStatus(StrEnum):
+    START = "start"
+    PROGRESS = "progress"
+    COMPLETE = "complete"
+    ERROR = "error"
 
 
 class MessageReferenceBase(BaseModel):
@@ -38,7 +46,7 @@ class EventError(BaseModel):
 class EventResponse(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, from_attributes=True)
 
-    event_status: str
+    event_status: EventStatus
     user_id: str
     session_id: str
     branch: str | None = None
@@ -48,8 +56,12 @@ class EventResponse(BaseModel):
     ui_status: str | None = None # TODO: state_delta.ui_status
     content: EventContent | None = None
     error: EventError | None = None
+
+
+class FinalEventResponse(EventResponse):
     final_report_response: dict | None = None
-    
+
+
 class AgentRequest(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

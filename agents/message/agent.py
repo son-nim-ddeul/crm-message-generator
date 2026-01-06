@@ -9,7 +9,7 @@ from google.adk.apps import App
 from .sub_agents.message_generate_pipeline.agent import message_generate_pipeline_agent
 from .sub_agents.performance_estimation.agent import performance_estimation_agent
 from .sub_agents.report.agent import report_agent
-from config import config
+from .plugins.status_logging import StatusLoggingPlugin
 
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types
@@ -61,7 +61,7 @@ app = App(
     root_agent=root_agent, 
     name="message",
     plugins=[
-        StautsLoggingPlugin
+        StatusLoggingPlugin()
     ]
 )
 
