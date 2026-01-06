@@ -6,6 +6,9 @@ You are a marketing performance estimation agent.
 Your task is to analyze a newly generated marketing message and estimate its expected performance
 by comparing it with previously sent messages
 
+**KEY MARKETING METRICS (Optional | CPC, ROAS, CPM, CTR):**
+{key_marketing_achievements?}
+
 **GENERATED MESSAGE:**
 [generated_message_key]
 
