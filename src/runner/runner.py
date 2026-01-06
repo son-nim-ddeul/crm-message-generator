@@ -36,16 +36,11 @@ def initialize_adk_services():
     global _session_service, _runners
     
     # SessionService 초기화
-    _session_service = SqliteSessionService(
-        db_path=settings.rds_db_path
-    )
+    _session_service = SqliteSessionService(db_path=settings.rds_db_path)
     
     # Runner 초기화
     app = __get_app(message_app.name)
-    _runners[message_app.name] = Runner(
-        app=app,
-        session_service=_session_service
-    )
+    _runners[message_app.name] = Runner(app=app, session_service=_session_service)
 
 
 def get_session_service() -> SqliteSessionService:
@@ -92,20 +87,20 @@ async def setup_session_and_runner(
             raise Exception(f"세션을 찾을 수 없습니다. session_id={session_id}")
     
     return session.id, runner
-    
+
+
 def json_dumps(response: schemas.EventResponse) -> str:
-    json_str = response.model_dump_json()
+    json_str = response.model_dump_json(ensure_ascii=False)
     return f"data: {json_str}\n\n"
     
+
 async def execute_agent(
     user_id: str, 
     session_id: str, 
     runner: Runner
 ) -> AsyncGenerator[str, None]:
     # TODO: 에이전트 new_message 수정
-    execute_message = Content(
-        parts=[Part(text="마케팅 메시지 생성해줘.")]
-    )
+    execute_message = Content(parts=[Part(text="마케팅 메시지 생성해줘.")])
     try:
         # Stream 시작 yield
         start_response = schemas.EventResponse(
@@ -169,10 +164,10 @@ async def execute_agent(
             timestamp=datetime.now().timestamp()
         )
 
-        if str(e) is None:
-            error_message="에이전트 동작간 예외가 발생하였습니다."
+        if str_r := str(e):
+            error_message=str_r
         else:
-            error_message=str(e)
+            error_message="에이전트 동작간 예외가 발생하였습니다."
             
         response.error = schemas.EventError(
             error_code="INTERNAL_ERROR",

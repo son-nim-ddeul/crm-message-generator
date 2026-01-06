@@ -2,9 +2,11 @@ from datetime import timedelta
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
 
+from src.message.schemas import MessageAgentConfig
+
 from ..types import MessageType
 from agents.config import config
-from .utils import find_previous_messages, get_betweem_holiday_list, get_season
+from .utils import find_previous_messages
 from .prompt import get_performance_estimation_config
 from google.adk.agents.callback_context import CallbackContext
 
@@ -48,26 +50,18 @@ def set_previous_messages(callback_context: CallbackContext):
 
     agent_name = callback_context.agent_name
     message_type = MessageType.get_message_type(agent_name=agent_name)
+    message_config = MessageAgentConfig(**callback_context.state)
+    message_content = callback_context.state.get(f"{message_type.value}_message")
 
-    def _get_previous_messages() -> list[dict] | None:
-        if not callback_context.state.get("message_sending_datetime"):
-            return None
+    previous_messages = find_previous_messages(
+        message_info= {
+            "content": message_content,
+            "metadata": message_config.metadata_dict()
+        }, 
+        top_k=TOP_K
+    ) if message_config.is_sending_datetime_set else None
 
-        current_message_info = {
-            "content": callback_context.state.get("message_content"),
-            "metadata": {
-                "KPI": callback_context.state.get("message_metadata", {}).get("KPI", ""),
-                "send_reserve_date": callback_context.state.get("message_metadata", {}).get("send_reserve_date", None),
-                "holiday_list": get_betweem_holiday_list(
-                    start_date=callback_context.state.get("message_sending_datetime"),
-                    end_date=callback_context.state.get("message_sending_datetime") + timedelta(days=14)),
-                "season": get_season(callback_context.state.get("message_sending_datetime")),
-            },
-        }
-        return find_previous_messages(message_info=current_message_info, top_k=TOP_K)
-    
-
-    callback_context.state[f"{message_type.value}_previous_messages"] = _get_previous_messages()
+    callback_context.state[f"{message_type.value}_previous_messages"] = previous_messages
 
 
 def create_estimate_pipeline(message_type: MessageType, description: str) -> LlmAgent:
@@ -80,6 +74,7 @@ def create_estimate_pipeline(message_type: MessageType, description: str) -> Llm
         output_key=f"{message_type.value}_estimation",
         before_agent_callback=set_previous_messages
     )
+
 
 
 aspirational_dreamer_estimation = create_estimate_pipeline(

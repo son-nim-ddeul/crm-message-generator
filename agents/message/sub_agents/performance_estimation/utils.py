@@ -33,7 +33,7 @@ def get_season(date: datetime) -> str:
     return f"{date_formatted} {season}"
 
 
-def get_betweem_holiday_list(start_date: datetime, end_date: datetime) -> list[str]:
+def get_holidays(start_date: datetime, end_date: datetime) -> list[str]:
     holidays_info = []
 
     for year in range(start_date.year, end_date.year + 1):

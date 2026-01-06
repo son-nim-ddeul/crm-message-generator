@@ -1,5 +1,3 @@
-# {message_type.value}_message
-# TODO: temp:{message_type.value}_previous_message 사용
 from ..types import MessageType
 
 estimation_instruction_template = """
@@ -29,11 +27,9 @@ Your response must be a single, raw JSON object validating against the 'Estimati
 """
 
 def get_performance_estimation_config(message_type: MessageType) -> str:
-    generated_message_key = f"{message_type.value}_message"
-    sent_message_key = f"temp:{message_type.value}_previous_message"
     instruction = (
             estimation_instruction_template
-            .replace("[generated_message_key]", generated_message_key)
-            .replace("[previously_sent_messages_key]", sent_message_key)
+            .replace("[generated_message_key]", "{" + f"{message_type.value}_message" + "}")
+            .replace("[previously_sent_messages_key]", "{" + f"{message_type.value}_previous_messages" + "}")
         )
     return instruction

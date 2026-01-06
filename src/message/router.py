@@ -48,7 +48,7 @@ async def run_agent_sse(req: schemas.MessageAgentRequest) -> StreamingResponse:
             app_name=app_name,
             user_id=req.user_id,
             session_id=req.session_id,
-            state_config=req.config.model_dump()
+            state_config=req.config.model_dump_json(ensure_ascii=False)
         )
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
