@@ -84,9 +84,29 @@ _ui_status_cache = {
     },
     "report_agent": {
         "type": False,
-        "before": "write report about marketing performance estimation",
-        "after": "write report complete"
-    }
+        "before": "Write report about marketing performance estimation",
+        "after": "Write report complete"
+    },
+    "aspirational_dreamer_report_agent": {
+        "type": False,
+        "before": "(Strategy : aspirational dreamer) Write report about marketing performance estimation",
+        "after": "(Strategy : aspirational dreamer) Write report complete"
+    },
+    "empathetic_supporter_report_agent": {
+        "type": False,
+        "before": "(Strategy : empathetic supporter) Write report about marketing performance estimation",
+        "after": "(Strategy : empathetic supporter) Write report complete"
+    },
+    "playful_entertainer_report_agent": {
+        "type": False,
+        "before": "(Strategy : playful entertainer) Write report about marketing performance estimation",
+        "after": "(Strategy : playful entertainer) Write report complete"
+    },
+    "rational_advisor_report_agent": {
+        "type": False,
+        "before": "(Strategy : rational advisor) Write report about marketing performance estimation",
+        "after": "(Strategy : rational advisor) Write report complete"
+    },
 }
 
 def _format_strategy_prefix(branch: str) -> Optional[str]:
