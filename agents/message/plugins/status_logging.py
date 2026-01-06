@@ -24,18 +24,18 @@ _ui_status_cache = {
     },
     "empathetic_supporter_message": {
         "type": False,
-        "before": "Initiating empathetic supporter_message message generation process",
-        "after": "Completing empathetic supporter_message message generation process"
+        "before": "Initiating empathetic supporter message message generation process",
+        "after": "Completing empathetic supporter message message generation process"
     },
     "playful_entertainer_message": {
         "type": False,
-        "before": "Initiating playful entertainer_message message generation process",
-        "after": "Completing playful entertainer_message message generation process"
+        "before": "Initiating playful entertainer message message generation process",
+        "after": "Completing playful entertainer message message generation process"
     },
     "rational_advisor_message": {
         "type": False,
-        "before": "Initiating rational advisor_message message generation process",
-        "after": "Completing rational advisor_message message generation process"
+        "before": "Initiating rational advisor message message generation process",
+        "after": "Completing rational advisor message message generation process"
     },
     "message_generator": {
         "type": True,
