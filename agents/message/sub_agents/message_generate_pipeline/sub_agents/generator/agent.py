@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
-from config import config
+from agents.config import config
 from ....types import MessageType
 
 from .prompt import (
@@ -47,4 +47,3 @@ def get_enhanced_message_generator(message_type: MessageType) -> LlmAgent:
         output_schema=EnhancedMessageOutput,
         output_key=f"{message_type.value}_message",  # 동일한 key로 덮어쓰기
     )
-

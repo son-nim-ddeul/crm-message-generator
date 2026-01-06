@@ -1,10 +1,14 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+
 from datetime import datetime
 from google.adk.agents import SequentialAgent
 from google.adk.apps import App
 from .sub_agents.message_generate_pipeline.agent import message_generate_pipeline_agent
 from .sub_agents.performance_estimation.agent import performance_estimation_agent
 from .sub_agents.report.agent import report_agent
-from config import config
 
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types

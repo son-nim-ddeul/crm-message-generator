@@ -1,7 +1,7 @@
 from typing import Literal
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
-from config import config
+from agents.config import config
 from ....types import MessageType
 from .prompt import marketing_message_evaluator_instruction
 

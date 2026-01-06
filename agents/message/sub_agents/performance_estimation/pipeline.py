@@ -1,13 +1,10 @@
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
 
-from pathlib import Path
-import sys
-sys.path.append(str(Path(__file__).parent.parent.parent.parent.parent))
 from src.message.schemas import MessageAgentConfig
 
 from ..types import MessageType
-from config import config
+from agents.config import config
 from .utils import find_previous_messages
 from .prompt import get_performance_estimation_config
 from google.adk.agents.callback_context import CallbackContext
