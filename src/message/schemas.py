@@ -48,6 +48,7 @@ class EventResponse(BaseModel):
     ui_status: str | None = None # TODO: state_delta.ui_status
     content: EventContent | None = None
     error: EventError | None = None
+    final_report_response: dict | None = None
     
 class AgentRequest(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)

@@ -1,14 +1,18 @@
-# {message_type.value}_message 
+from google.adk.agents import ParallelAgent
+from .pipeline import (
+    aspirational_dreamer_report,
+    empathetic_supporter_report,
+    playful_entertainer_report,
+    rational_advisor_report
+)
 
-# result = [
-#     {
-#             message_type: "aspirational_dreamer",
-#             title: {message_type.value}_message.title,
-#             content: {message_type.value}_message.content,
-#             estimation: 마크다운으로 정리, 포맷팅,
-#             conclusion: 마크다운으로 정리, 포맷팅
-#         }
-#  ]
-
-# {message_type.value}_report
-report_agent = None
+report_agent = ParallelAgent(
+    name="report_agent",
+    description="각 전략별 메시지 생성 및 성과 예측 결과 보고서를 작성합니다.",
+    sub_agents=[
+        aspirational_dreamer_report,
+        empathetic_supporter_report,
+        playful_entertainer_report,
+        rational_advisor_report
+    ]
+)
