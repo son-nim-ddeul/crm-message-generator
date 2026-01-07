@@ -1,5 +1,5 @@
 # Use a lightweight Python base image
-FROM python:3.13-slim AS base
+FROM python:3.13-slim
 
 # Install uv binary from the official image
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -28,14 +28,8 @@ RUN uv sync --frozen --no-dev
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 
-# --- Stage for Agent ---
-FROM base AS agent
-# The user wants 8080:8000 mapping, so the container listens on 8000
+# Expose port 8000
 EXPOSE 8000
-CMD ["uv", "run", "adk", "web", "agents", "--host", "0.0.0.0"]
 
-# --- Stage for API ---
-FROM base AS api
-EXPOSE 8000
-# The user wants 8000:8000 mapping, so the container listens on 8000
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Run the API server
+CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

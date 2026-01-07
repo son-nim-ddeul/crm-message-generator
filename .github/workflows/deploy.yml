@@ -30,7 +30,7 @@ jobs:
 
       - name: Save Docker image
         run: |
-          docker save crm-message-client:latest | gzip > image.tar.gz
+          docker save crm-message-server:latest | gzip > image.tar.gz
 
       - name: Install sshpass
         run: |
