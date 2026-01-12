@@ -32,19 +32,24 @@
 [] agent 직접 테스트를 위해 작성한 임시데이터 관리
 - ex. state내 "dev_test" 값이 True인 경우에만 임시데이터 설정 등
 ---
-### 6. agents/message/performance_estimation - RAG 데이터 활용 고도화
+### 6. agents/message/performance_estimation - RAG 데이터 활용 고도화  (님)
 [] 현재 사용중인 RAG 비즈니스 로직 개선
 - 정확한 마케팅 성과 예측을 위한 RAG 데이터 사용 방법 개선
 - ex. 마케팅 메시지 tone, category (신규 회원 유입, 구매 유도 등)
 - ex. 현재 사용중인 metadata를 활용한 비즈니스 로직, 알고리즘
 ---
-### 7. global_memory_cache 동작 개선
-[] 글로벌 캐시 활용 고도화
+### 7. global_memory_cache 동작 개선  (손)
+[x] 글로벌 캐시 활용 고도화
 - 현재는 인메모리 캐시구조로 메모리 관리에 대한 코드가 부족
 - ex. 사용 후 메모리 clear, 메모리 관리 API 등으로 개선이 진행될 수 있음
+
+** global_memory_cache 삭제 **
+- state 관리의 한계로 global_memory_cache 모듈을 추가
+- 루트 에이전트 레벨에서 state를 관리
+- 루트 에이전트에서 after_callback_agent를 통해 최종 아웃풋 포매팅
 ---
-### 8. yield event에 따른 response 정리
-[] 프론트에서 노출 및 사용할 response 필드 재정의
+### 8. yield event에 따른 response 정리  (손)
+[x] 프론트에서 노출 및 사용할 response 필드 재정의
 - 현재는 필요할법한 내용들을 임의로 응답 반환
 - 실제 필요한 값들만 응답 재정의하여 경량화된 응답 반환
 - contents 내부 반환되는 str json을 활용 가능하도록 포맷팅
@@ -61,6 +66,6 @@
 - 데이터를 확인 하거나 관리 편의용 API 추가
 - 프론트와 adk 서버간 동일 Database 데이터 활용 가능
 ---
-### 11. cms 페이지 추가
+### 11. cms 페이지 추가  (뜰)
 [] 현재 agents 정보 조회, 사용량 조회 등 기능 추가
 - 제출 및 프레젠테이션 시, 시각화 정보 제공 가능
