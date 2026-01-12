@@ -4,7 +4,7 @@
 [] 각 동작별 모델 수정 ex. writer_model = claude 사용 등
 - 후순위 작업사항 (비용 고려)
 ---
-### 2. agents/persona - 파일 업로드 기능
+### 2. agents/persona - 파일 업로드 기능  (손)
 [] 사용자의 파일 업로드 (ex. 트렌드 리서치 리포트)
 - mime_type 사전 정의 필요 (ex. pdf only)
 - upload size 사전 정의 필요 (ex. 5mb 이하)
@@ -13,14 +13,14 @@
     - ex. 페르소나 생성 API에서 파일업로드를 받도록
     - 파일관리 필요
 ---
-### 3. agents/persona - agents 프로세스 설계 및 구현
+### 3. agents/persona - agents 프로세스 설계 및 구현  (손)
 [] 페르소나 에이전트 root_agent 및 sub_agents 프로세스 설계
 - agents/message에서 사용중인 페르소나 포맷에 맞는 페르소나 생성
     - ex. 페르소나 생성 갯수 고려
     - ex. 페르소나 다양성을 위한 워크플로우 구성 고려
 - 참고 : https://github.com/google/adk-samples
 ---
-### 4. agents/persona - 페르소나 DB 및 API 생성
+### 4. agents/persona - 페르소나 DB 및 API 생성  (손)
 [] 페르소나 에이전트에서 생성한 페르소나 관리
 - 에이전트가 생성한 페르소나를 DB에 저장 및 테이블 설계
     - ex. persona_example.json 삭제
