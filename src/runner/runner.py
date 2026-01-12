@@ -85,87 +85,33 @@ async def setup_session_and_runner(
     return session.id, runner
 
 
-async def execute_agent(
-    user_id: str, 
-    session_id: str, 
-    runner: Runner
-) -> AsyncGenerator[str, None]:
+async def execute_agent(user_id: str, session_id: str, runner: Runner) -> AsyncGenerator[str, None]:
     # TODO: 에이전트 new_message 수정
     execute_message = Content(parts=[Part(text="마케팅 메시지 생성해줘.")])
     try:
         # Stream 시작 yield
-        start_response = schemas.EventResponse(
-            event_status=EventStatus.START,
-            user_id=user_id,
-            session_id=session_id,
-            timestamp=datetime.now().timestamp()
-        )
+        start_response = schemas.EventResponse.initiate_event_response(user_id=user_id, session_id=session_id)
         yield start_response.model_dump_json(ensure_ascii=False)
         
-        async with Aclosing(
-            runner.run_async(
-                user_id=user_id,
-                session_id=session_id,
-                new_message=execute_message
-            )
-        ) as agen:
+        _runner = runner.run_async(user_id=user_id, session_id=session_id, new_message=execute_message)
+        async with Aclosing(_runner) as agen:
             async for event in agen:
-                ui_status = event.actions.state_delta.get("ui_status")
-                response = schemas.EventResponse(
-                    event_status=EventStatus.PROGRESS,
-                    user_id=user_id,
-                    session_id=session_id,
-                    branch=event.branch,
-                    author=event.author,
-                    timestamp=event.timestamp,
-                    is_final_response=event.is_final_response(),
-                    ui_status=ui_status
-                )
-                
-                if event.error_code is not None:
-                    response.error=schemas.EventError(
-                        error_code=event.error_code,
-                        error_message=event.error_message
-                    )
-                
-                if event.content is not None:
-                    response.content=schemas.EventContent(
-                        role=event.content.role,
-                        parts=event.content.parts
-                    )
-                
-                # TODO: 심플로깅 추후 삭제
-                from pprint import pprint
-                pprint(response)
-                
+                response = schemas.EventResponse.from_event(user_id=user_id, session_id=session_id, event=event)
                 yield response.model_dump_json(ensure_ascii=False)
                 
-            # Stream 종료 yield
-            complete_response = schemas.FinalEventResponse(
-                event_status=EventStatus.COMPLETE,
-                user_id=user_id,
-                session_id=session_id,
-                final_report_response=get_global_memory_cache(key=session_id),
-                timestamp=datetime.now().timestamp()
-            )
-            yield complete_response.model_dump_json(ensure_ascii=False)
+        # Stream 종료 yield
+        complete_response = schemas.FinalEventResponse.from_final_event(user_id=user_id, session_id=session_id)
+        yield complete_response.model_dump_json(ensure_ascii=False)
     except Exception as e:
         logger.exception("Error in execute_agent: %s", e)
-        response = schemas.EventResponse(
-            event_status=EventStatus.ERROR,
+        error_message = str(e) if str(e) else "에이전트 동작간 예외가 발생하였습니다."
+
+        response = schemas.EventResponse.from_error_event(
             user_id=user_id,
             session_id=session_id,
-            timestamp=datetime.now().timestamp()
-        )
-
-        if str_r := str(e):
-            error_message=str_r
-        else:
-            error_message="에이전트 동작간 예외가 발생하였습니다."
-            
-        response.error = schemas.EventError(
+            timestamp=datetime.now().timestamp(),
             error_code="INTERNAL_ERROR",
             error_message=error_message
         )
-        
+
         yield response.model_dump_json(ensure_ascii=False)

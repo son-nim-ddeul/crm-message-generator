@@ -1,7 +1,10 @@
+from google.adk.events import Event
 from holidayskr import year_holidays
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime, timedelta
 from enum import StrEnum
+
+from agents.global_memory_cache import get_global_memory_cache
 
 
 class EventStatus(StrEnum):
@@ -58,8 +61,63 @@ class EventResponse(BaseModel):
     error: EventError | None = None
 
 
+    @classmethod
+    def initiate_event_response(cls, user_id: str, session_id: str) -> "EventResponse":
+        return cls(
+            user_id=user_id,
+            session_id=session_id,
+            event_status=EventStatus.START,
+            timestamp=datetime.now().timestamp()
+        )
+
+    @classmethod
+    def from_event(cls, event: Event, user_id: str, session_id: str) -> "EventResponse":
+        EventError = EventError(
+            error_code=event.error_code,
+            error_message=event.error_message
+        ) if event.error_code is not None else None
+        
+        EventContent = EventContent(
+            role=event.content.role,
+            parts=event.content.parts
+        ) if event.content is not None else None
+        
+        return cls(
+            user_id=user_id,
+            session_id=session_id,
+            event_status=EventStatus.PROGRESS,
+            timestamp=event.timestamp,
+            is_final_response=event.is_final_response(),
+            ui_status=event.actions.state_delta.get("ui_status"),
+            branch=event.branch,
+            author=event.author,
+            content=EventContent,
+            error=EventError,
+        )
+
+    @classmethod
+    def from_error_event(cls, user_id: str, session_id: str, timestamp: float, error_code: str, error_message: str) -> "EventResponse":
+        return cls(
+            user_id=user_id,
+            session_id=session_id,
+            event_status=EventStatus.ERROR,
+            timestamp=timestamp,
+            error=EventError(error_code=error_code, error_message=error_message)
+        )
+
+
 class FinalEventResponse(EventResponse):
     final_report_response: dict | None = None
+
+    @classmethod
+    def from_final_event(cls, user_id: str, session_id: str) -> "FinalEventResponse":
+        return cls(
+            user_id=user_id,
+            session_id=session_id,
+            event_status=EventStatus.COMPLETE,
+            final_report_response=get_global_memory_cache(key=session_id),
+            timestamp=datetime.now().timestamp(),
+        )
 
 
 class AgentRequest(BaseModel):
