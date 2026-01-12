@@ -4,8 +4,6 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime, timedelta
 from enum import StrEnum
 
-from agents.global_memory_cache import get_global_memory_cache
-
 
 class EventStatus(StrEnum):
     START = "start"
@@ -72,12 +70,12 @@ class EventResponse(BaseModel):
 
     @classmethod
     def from_event(cls, event: Event, user_id: str, session_id: str) -> "EventResponse":
-        EventError = EventError(
+        event_error = EventError(
             error_code=event.error_code,
             error_message=event.error_message
         ) if event.error_code is not None else None
         
-        EventContent = EventContent(
+        event_content = EventContent(
             role=event.content.role,
             parts=event.content.parts
         ) if event.content is not None else None
@@ -91,8 +89,8 @@ class EventResponse(BaseModel):
             ui_status=event.actions.state_delta.get("ui_status"),
             branch=event.branch,
             author=event.author,
-            content=EventContent,
-            error=EventError,
+            content=event_content,
+            error=event_error,
         )
 
     @classmethod
@@ -111,6 +109,7 @@ class FinalEventResponse(EventResponse):
 
     @classmethod
     def from_final_event(cls, user_id: str, session_id: str) -> "FinalEventResponse":
+        from agents.global_memory_cache import get_global_memory_cache
         return cls(
             user_id=user_id,
             session_id=session_id,
